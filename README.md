@@ -1,12 +1,12 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# isotope
+# Isotope
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of isotope is to …
+The goal of this package is to provide a simple interface for selecting feature isotope pairs in an untargeted metabolomics dataset.
 
 ## Installation
 
@@ -18,12 +18,10 @@ You can install the development version of isotope from
 pak::pak("JohanLassen/isotopes")
 ```
 
-## Example
+## Once installed you need one line to begin the analysis
 
-After installing you just need to load the package and run the function
-\`run_app()\`\` without any arguments:
+It doesn't require any arguments, as it opens an app which informs you about the next steps.
 
 ``` r
-library(isotope)
-run_app()
+isotope::run_app()
 ```
