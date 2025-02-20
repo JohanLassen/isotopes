@@ -1,7 +1,3 @@
-options(shiny.maxRequestSize = 500*1024^2)
-
-
-library(tidyverse)
 
 
 #' Find isotopes
@@ -76,17 +72,20 @@ return_isotope_df <- function(peaks, mz_col, rt_col, isotope_differences, mz_thr
 #' @param input,output,session Internal parameters for {shiny}.
 #'     DO NOT REMOVE.
 #' @import shiny
+#' @importFrom vroom locale vroom
+#' @importFrom readr write_csv
 #' @noRd
 app_server <- function(input, output, session) {
 
   # Load the file
   data <- reactive({
     req(input$file)
+    options(shiny.maxRequestSize = 500*1024^2)
 
-    denmark_locale <- locale(decimal_mark = ",", grouping_mark = ".", date_format = "%d-%m-%Y", time_format = "%H:%M:%S")
-    us_locale      <- locale(decimal_mark = ".", grouping_mark = ",", date_format = "%m/%d/%Y", time_format = "%I:%M:%S %p")
-    print(input$locale)
-    locale =if (input$locale) denmark_locale else us_locale
+    denmark_locale <- vroom::locale(decimal_mark = ",", grouping_mark = ".", date_format = "%d-%m-%Y", time_format = "%H:%M:%S")
+    us_locale      <- vroom::locale(decimal_mark = ".", grouping_mark = ",", date_format = "%m/%d/%Y", time_format = "%I:%M:%S %p")
+
+    locale = if (input$locale) denmark_locale else us_locale
     vroom::vroom(input$file$datapath, locale = locale)
   })
 
@@ -135,7 +134,7 @@ app_server <- function(input, output, session) {
       paste("isotope_result", Sys.Date(), ".csv", sep = "_")
     },
     content = function(file) {
-      write_csv(isotope_data(), file)
+      readr::write_csv(isotope_data(), file)
     }
   )
 
