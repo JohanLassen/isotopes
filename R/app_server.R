@@ -4,10 +4,18 @@ options(shiny.maxRequestSize = 500*1024^2)
 library(tidyverse)
 
 
+#' Find isotopes
+#'
+#' @param isotopic_mass_diff
+#' @param peaks
+#' @param mz_threshold
+#' @param rt_threshold
+#' @importFrom purrr map
+#' @returns A list of indices of the isotopes
 find_isotopes <- function(isotopic_mass_diff,peaks, mz_threshold, rt_threshold){
   seq_len(nrow(peaks)) |>
-    map(~{
-      valid_indices <- which(
+    purrr::map(~{
+      valid_indices <- base::which(
         abs(peaks$mz - peaks$mz[.x]+isotopic_mass_diff) <= mz_threshold &
           abs(peaks$rt - peaks$rt[.x]) <= rt_threshold)
       valid_indices[valid_indices != .x]
@@ -16,6 +24,20 @@ find_isotopes <- function(isotopic_mass_diff,peaks, mz_threshold, rt_threshold){
     )
 }
 
+
+
+#' Isotope data frame
+#'
+#' @param peaks
+#' @param mz_col
+#' @param rt_col
+#' @param isotope_differences
+#' @param mz_threshold
+#' @param rt_threshold
+#' @importFrom purrr map imap_dfr
+#' @importFrom dplyr arrange mutate select everything
+#' @returns
+#' @examples
 return_isotope_df <- function(peaks, mz_col, rt_col, isotope_differences, mz_threshold, rt_threshold){
 
 
@@ -24,7 +46,7 @@ return_isotope_df <- function(peaks, mz_col, rt_col, isotope_differences, mz_thr
 
   matches <-
     isotope_differences |>
-    map(find_isotopes, peaks, mz_threshold, rt_threshold)
+    purrr::map(find_isotopes, peaks, mz_threshold, rt_threshold)
 
 
   # Merge the lists in matches
@@ -39,9 +61,9 @@ return_isotope_df <- function(peaks, mz_col, rt_col, isotope_differences, mz_thr
     imap_dfr(~{
       if (length(.x)>0){
         peaks[c(.y, .x),] |>
-          arrange(mzmed) |>
-          mutate(matchID = .y) |>
-          select(matchID, everything())
+          dplyr::arrange(mzmed) |>
+          dplyr::mutate(matchID = .y) |>
+          dplyr::select(matchID, everything())
       }
     })
 }
