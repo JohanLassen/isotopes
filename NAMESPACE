@@ -2,6 +2,7 @@
 
 export(run_app)
 import(shiny)
+import(shinyWidgets)
 importFrom(dplyr,arrange)
 importFrom(dplyr,everything)
 importFrom(dplyr,mutate)
