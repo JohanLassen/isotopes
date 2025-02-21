@@ -18,9 +18,11 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of isotope is to ...
+The goal of this package is to provide a simple interface for selecting feature isotope pairs in an untargeted metabolomics dataset.
 
 ## Installation
+
+**If running on windows:** Make sure you have Rtools install before installing the isotopes package. You can download Rtools from [here](https://cran.r-project.org/bin/windows/Rtools/). **
 
 You can install the development version of isotope from [GitHub](https://github.com/) with:
 
@@ -29,13 +31,12 @@ You can install the development version of isotope from [GitHub](https://github.
 pak::pak("JohanLassen/isotopes")
 ```
 
-## Example
+## Once installed you need one line to begin the analysis
 
-After installing you just need to load the package and run the function `run_app()`` without any arguments:
+It doesn't require any arguments, as it opens an app which informs you about the next steps.
 
 ``` r
-library(isotope)
-run_app()
+isotope::run_app()
 ```
 
 
