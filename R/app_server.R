@@ -74,6 +74,7 @@ return_isotope_df <- function(peaks, mz_col, rt_col, isotope_differences, mz_thr
 #' @import shiny
 #' @importFrom vroom locale vroom
 #' @importFrom readr write_csv
+#' @importFrom writexl write_xlsx
 #' @noRd
 app_server <- function(input, output, session) {
 
@@ -96,9 +97,7 @@ app_server <- function(input, output, session) {
     updateSelectInput(session, "rt", choices = colnames(data()))
   })
 
-  isotope_data <- reactive({
-    req(input$compute)
-    req(data())
+  isotope_data <- eventReactive(input$compute, {
     return_isotope_df(data(), mz_col = input$mz, rt_col = input$rt, parsed_isotopes(), input$mass_threshold, input$rt_threshold)
   })
 
@@ -134,7 +133,16 @@ app_server <- function(input, output, session) {
       paste("isotope_result", Sys.Date(), ".csv", sep = "_")
     },
     content = function(file) {
-      readr::write_csv(isotope_data(), file)
+      readr::write_excel_csv(isotope_data(), file)
+    }
+  )
+
+  output$excel <- downloadHandler(
+    filename = function() {
+      paste("isotope_result", Sys.Date(), ".xlsx", sep = "_")
+    },
+    content = function(file) {
+      writexl::write_xlsx(isotope_data(), file)
     }
   )
 

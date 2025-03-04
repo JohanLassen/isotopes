@@ -51,7 +51,8 @@ app_ui <- function(request) {
           actionButton("compute", "Compute isotopes!"),
 
           # Save the computed dataset
-          downloadButton("download", "Save the result")
+          downloadButton("download", "Save as csv"),
+          downloadButton("excel", "Save as Excel")
         ),
         mainPanel(
           h3("Imported Data and Results"),
