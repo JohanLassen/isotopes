@@ -2,10 +2,10 @@
 
 #' Find isotopes
 #'
-#' @param isotopic_mass_diff
-#' @param peaks
-#' @param mz_threshold
-#' @param rt_threshold
+#' @param isotopic_mass_diff single isotope difference (mz diff)
+#' @param peaks dataframe with mz and rt info
+#' @param mz_threshold Acceptable level of deviation from expected value
+#' @param rt_threshold Acceptable level of deviation from expected value
 #' @importFrom purrr map
 #' @returns A list of indices of the isotopes
 find_isotopes <- function(isotopic_mass_diff,peaks, mz_threshold, rt_threshold){
@@ -24,16 +24,15 @@ find_isotopes <- function(isotopic_mass_diff,peaks, mz_threshold, rt_threshold){
 
 #' Isotope data frame
 #'
-#' @param peaks
-#' @param mz_col
-#' @param rt_col
-#' @param isotope_differences
-#' @param mz_threshold
-#' @param rt_threshold
+#' @param peaks dataframe with mz and rt info
+#' @param mz_col mz column anme
+#' @param rt_col rt column name
+#' @param isotope_differences vector of isotope differences (mz diff)
+#' @param mz_threshold Acceptable level of deviation from expected value
+#' @param rt_threshold Acceptable level of deviation from expected value
 #' @importFrom purrr map imap_dfr
 #' @importFrom dplyr arrange mutate select everything
-#' @returns
-#' @examples
+#' @returns A dataframe with the isotopes
 return_isotope_df <- function(peaks, mz_col, rt_col, isotope_differences, mz_threshold, rt_threshold){
 
 
@@ -57,7 +56,7 @@ return_isotope_df <- function(peaks, mz_col, rt_col, isotope_differences, mz_thr
     imap_dfr(~{
       if (length(.x)>0){
         peaks[c(.y, .x),] |>
-          dplyr::arrange(mzmed) |>
+          dplyr::arrange(mz) |>
           dplyr::mutate(matchID = .y) |>
           dplyr::select(matchID, everything())
       }
@@ -75,6 +74,7 @@ return_isotope_df <- function(peaks, mz_col, rt_col, isotope_differences, mz_thr
 #' @importFrom vroom locale vroom
 #' @importFrom readr write_csv
 #' @importFrom writexl write_xlsx
+#' @importFrom readxl read_excel
 #' @noRd
 app_server <- function(input, output, session) {
 
@@ -87,7 +87,12 @@ app_server <- function(input, output, session) {
     us_locale      <- vroom::locale(decimal_mark = ".", grouping_mark = ",", date_format = "%m/%d/%Y", time_format = "%I:%M:%S %p")
 
     locale = if (input$locale) denmark_locale else us_locale
-    vroom::vroom(input$file$datapath, locale = locale)
+
+    if (grepl("[.]xls", input$file$name)) {
+      return(readxl::read_excel(input$file$datapath))
+    } else{
+      vroom::vroom(input$file$datapath, locale = locale)
+    }
   })
 
   # Update the selectInput choices

@@ -7,15 +7,17 @@ Authors@R:
            role = c("aut", "cre"),
            email = "your@email.com")
 Description: What the package does (one paragraph).
-License: What license is it under?
+License: MIT + file LICENSE
 Imports: 
     config,
     dplyr,
     golem,
     purrr,
+    readr,
+    readxl,
     shiny,
     shinyWidgets,
-    tidyr,
+    vroom,
     writexl
 Encoding: UTF-8
 LazyData: true

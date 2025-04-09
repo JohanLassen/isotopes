@@ -6,6 +6,15 @@
 \usage{
 find_isotopes(isotopic_mass_diff, peaks, mz_threshold, rt_threshold)
 }
+\arguments{
+\item{isotopic_mass_diff}{single isotope difference (mz diff)}
+
+\item{peaks}{dataframe with mz and rt info}
+
+\item{mz_threshold}{Acceptable level of deviation from expected value}
+
+\item{rt_threshold}{Acceptable level of deviation from expected value}
+}
 \value{
 A list of indices of the isotopes
 }

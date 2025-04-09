@@ -13,6 +13,22 @@ return_isotope_df(
   rt_threshold
 )
 }
+\arguments{
+\item{peaks}{dataframe with mz and rt info}
+
+\item{mz_col}{mz column anme}
+
+\item{rt_col}{rt column name}
+
+\item{isotope_differences}{vector of isotope differences (mz diff)}
+
+\item{mz_threshold}{Acceptable level of deviation from expected value}
+
+\item{rt_threshold}{Acceptable level of deviation from expected value}
+}
+\value{
+A dataframe with the isotopes
+}
 \description{
 Isotope data frame
 }
