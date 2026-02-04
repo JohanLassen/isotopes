@@ -22,18 +22,7 @@ find_isotopes <- function(isotopic_mass_diff,peaks, mz_threshold, rt_threshold){
 
 
 
-#' Isotope data frame
-#'
-#' @param peaks dataframe with mz and rt info
-#' @param mz_col mz column anme
-#' @param rt_col rt column name
-#' @param isotope_differences vector of isotope differences (mz diff)
-#' @param mz_threshold Acceptable level of deviation from expected value
-#' @param rt_threshold Acceptable level of deviation from expected value
-#' @importFrom purrr map imap_dfr
-#' @importFrom dplyr arrange mutate select everything
-#' @returns A dataframe with the isotopes
-return_isotope_df <- function(peaks, mz_col, rt_col, isotope_differences, mz_threshold, rt_threshold){
+return_isotope_df_deprecated <- function(peaks, mz_col, rt_col, isotope_differences, mz_threshold, rt_threshold){
 
 
   peaks$mz <- as.numeric(peaks[[mz_col]])
@@ -63,6 +52,54 @@ return_isotope_df <- function(peaks, mz_col, rt_col, isotope_differences, mz_thr
     })
 }
 
+#' Isotope data frame
+#'
+#' @param peaks dataframe with mz and rt info
+#' @param mz_col mz column anme
+#' @param rt_col rt column name
+#' @param isotope_differences vector of isotope differences (mz diff)
+#' @param mz_threshold Acceptable level of deviation from expected value
+#' @param rt_threshold Acceptable level of deviation from expected value
+#' @importFrom purrr map imap_dfr
+#' @importFrom dplyr arrange mutate select everything
+#' @returns A dataframe with the isotopes
+return_isotope_df <- function(peaks, mz_col, rt_col, isotope_differences, mz_threshold, rt_threshold) {
+
+  peaks$mz <- as.numeric(peaks[[mz_col]])
+  peaks$rt <- as.numeric(peaks[[rt_col]])
+  n <- nrow(peaks)
+
+  groups <- list()
+
+  for (i in seq_len(n)) {
+    # Find all peaks that are isotopes of peak i (higher mz only)
+    isotope_indices <- which(
+      sapply(seq_len(n), function(j) {
+        if (i == j) return(FALSE)
+        diff <- peaks$mz[j] - peaks$mz[i]
+        if (diff <= 0) return(FALSE)  # Only look forward (higher mz)
+        rt_ok <- abs(peaks$rt[j] - peaks$rt[i]) <= rt_threshold
+        mz_ok <- any(abs(diff - isotope_differences) <= mz_threshold)
+        rt_ok && mz_ok
+      })
+    )
+
+    if (length(isotope_indices) > 0) {
+      indices <- sort(c(i, isotope_indices))
+      key <- paste(indices, collapse = "-")
+      groups[[key]] <- indices  # Automatically deduplicates by key
+    }
+  }
+
+  if (length(groups) == 0) return(data.frame())
+
+  dplyr::bind_rows(lapply(seq_along(groups), function(idx) {
+    peaks[groups[[idx]], ] |>
+      dplyr::arrange(mz) |>
+      dplyr::mutate(matchID = idx) |>
+      dplyr::select(matchID, dplyr::everything())
+  }))
+}
 
 
 
