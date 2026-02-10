@@ -31,6 +31,17 @@ find_isotopes <- function(isotopic_mass_diff,peaks, mz_threshold, rt_threshold){
 
 
 
+#' Isotope data frame
+#'
+#' @param peaks dataframe with mz and rt info
+#' @param mz_col mz column anme
+#' @param rt_col rt column name
+#' @param isotope_differences vector of isotope differences (mz diff)
+#' @param mz_threshold Acceptable level of deviation from expected value
+#' @param rt_threshold Acceptable level of deviation from expected value
+#' @importFrom purrr map imap_dfr
+#' @importFrom dplyr arrange mutate select everything
+#' @returns A dataframe with the isotopes
 return_isotope_df <- function(peaks, mz_col, rt_col, isotope_differences, mz_threshold, rt_threshold){
 
 
@@ -40,7 +51,6 @@ return_isotope_df <- function(peaks, mz_col, rt_col, isotope_differences, mz_thr
   matches <-
     isotope_differences |>
     purrr::map(find_isotopes, peaks, mz_threshold, rt_threshold)
-  print(matches)
 
   # Merge the lists in matches
   merged <- list()
@@ -60,18 +70,7 @@ return_isotope_df <- function(peaks, mz_col, rt_col, isotope_differences, mz_thr
       }
     })
 }
-#'
-#' #' Isotope data frame
-#' #'
-#' #' @param peaks dataframe with mz and rt info
-#' #' @param mz_col mz column anme
-#' #' @param rt_col rt column name
-#' #' @param isotope_differences vector of isotope differences (mz diff)
-#' #' @param mz_threshold Acceptable level of deviation from expected value
-#' #' @param rt_threshold Acceptable level of deviation from expected value
-#' #' @importFrom purrr map imap_dfr
-#' #' @importFrom dplyr arrange mutate select everything
-#' #' @returns A dataframe with the isotopes
+
 #' return_isotope_df <- function(peaks, mz_col, rt_col, isotope_differences, mz_threshold, rt_threshold) {
 #'
 #'   peaks$mz <- as.numeric(peaks[[mz_col]])
